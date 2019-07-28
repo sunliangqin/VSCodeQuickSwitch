@@ -1,65 +1,45 @@
-# switch-files README
+# Basic Example - toggle between two files
+The following setting enables quick switch between .cpp and .h file.
+```json
+"quickSwitch.fileGroups": [
+    {
+        "pattern": "(.+)(\\.cpp|\\.h)",
+        "list": [
+            "$1.cpp",
+            "$1.h"
+        ]
+    }
+]
+```
+When you are in a .cpp or .h file, you can
+* Press `Ctrl+Alt+N` to toggle between the .cpp and .h file
+* Press `Ctrl+Alt+1` to switch to the .cpp file
+* Press `Ctrl+Alt+2` to switch to the .h file
 
-This is the README for your extension "switch-files". After writing up a brief description, we recommend including the following sections.
+![Quick Switch](images/quick-switch.gif)
 
-## Features
+# Advanced Example - toggle between multiple files
+The following setting enables quick switch between .cpp, .h and _ut.cpp.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+```json
+"quickSwitch.fileGroups": [
+    {
+        "pattern": "(.+?)(_ut\\.cpp|\\.cpp|\\.h)",
+        "list": [
+            "$1.cpp",
+            "$1.h",
+            "$1_ut.cpp"
+        ]
+    }
+]
+```
+1. pattern: a regular expression to match with the current file path. The first group that matches will be used for quick switch.
+1. list: an ordered list of files for quick switch. Use $n to reference the capturing groups defined in pattern.
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+When you are in one of the .cpp, .h or _ut.cpp file, you can
+* Press `Ctrl+Alt+N` to switch to the next file in the list
+* Press `Ctrl+Alt+P` to switch to the previous file in the list
+* Press `Ctrl+Alt+S` to switch to a file from quick pick
+* Press `Ctrl+Alt+1` to switch to the .cpp file (the first file in the list)
+* Press `Ctrl+Alt+2` to switch to the .h file (the second file in the list)
+* Press `Ctrl+Alt+3` to switch to the _ut.cpp file (the third file in the list)

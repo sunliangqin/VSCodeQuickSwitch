@@ -1,27 +1,125 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+class FileGroup {
+    pattern: string;
+    list: string[];
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-		console.log('Congratulations, your extension "switch-files" is now active!');
+    constructor(pattern: string, list: string[]) {
+        this.pattern = pattern;
+        this.list = list;
+    }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+    getList(filePath: string) {
+        const result = [];
+        if (filePath.match(this.pattern)) {
+            for (const file of this.list) {
+                result.push(filePath.replace(new RegExp(this.pattern), file));
+            }
+        }
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
-	});
-
-	context.subscriptions.push(disposable);
+        return result;
+    }
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {}
+class Configuration {
+    static Load(): FileGroup[] {
+        const fileGroups = [];
+        const fileGroupsConfig = vscode.workspace.getConfiguration().get<FileGroup[]>('quickSwitch.fileGroups');
+        if (fileGroupsConfig) {
+            for (const fileGroupConfig of fileGroupsConfig) {
+                fileGroups.push(new FileGroup(fileGroupConfig.pattern, fileGroupConfig.list));
+            }
+        }
+
+        return fileGroups;
+    }
+}
+
+async function switchFile(callback: (currentIndex: number, files: string[]) => Promise<string | undefined>) {
+    const activeTextEditor = vscode.window.activeTextEditor;
+    if (!activeTextEditor) {
+        return;
+    }
+
+    const currentFilePath = activeTextEditor.document.fileName;
+    const fileGroups = Configuration.Load();
+    for (const fileGroup of fileGroups) {
+        const files = fileGroup.getList(currentFilePath);
+        if (!files) {
+            continue;
+        }
+
+        const currentIndex = files.indexOf(currentFilePath);
+        const file = await callback(currentIndex, files);
+        if (!file || !fs.existsSync(file)) {
+            return;
+        }
+
+        const document = await vscode.workspace.openTextDocument(file);
+        vscode.window.showTextDocument(document);
+        return;
+    }
+}
+
+export function activate(context: vscode.ExtensionContext) {
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchFile', () => {
+        switchFile(async (currentIndex, files) => {
+            const fileQuickPickItems = [];
+            for (const file of files) {
+                if (!fs.existsSync(file)) {
+                    continue;
+                }
+
+                const relativePath = vscode.workspace.asRelativePath(file);
+                fileQuickPickItems.push('$(file)  ' + relativePath);
+            }
+
+            return await vscode.window.showQuickPick(fileQuickPickItems);
+        });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchNextFile', () => {
+        switchFile(async (currentIndex, files) => files[++currentIndex % files.length]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchPreviousFile', () => {
+        switchFile(async (currentIndex, files) => files[(--currentIndex + files.length) % files.length]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex1', () => {
+        switchFile(async (currentIndex, files) => files[0]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex2', () => {
+        switchFile(async (currentIndex, files) => files[1]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex3', () => {
+        switchFile(async (currentIndex, files) => files[2]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex4', () => {
+        switchFile(async (currentIndex, files) => files[3]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex5', () => {
+        switchFile(async (currentIndex, files) => files[4]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex6', () => {
+        switchFile(async (currentIndex, files) => files[5]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex7', () => {
+        switchFile(async (currentIndex, files) => files[6]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex8', () => {
+        switchFile(async (currentIndex, files) => files[7]);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex9', () => {
+        switchFile(async (currentIndex, files) => files[8]);
+    }));
+}

@@ -1,38 +1,166 @@
 {
-	"name": "switch-files",
-	"displayName": "Switch Files",
-	"description": "Alllows you to quickly switch to related files",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.36.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.helloWorld"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
-	},
-	"devDependencies": {
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.28",
-		"tslint": "^5.12.1",
-		"@types/node": "^10.12.21",
-		"@types/mocha": "^2.2.42"
-	}
+    "name": "quick-switch",
+    "displayName": "Quick Switch",
+    "description": "Enables you to quickly switch to related files",
+    "version": "1.0.0",
+    "engines": {
+        "vscode": "^1.36.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.switchFile",
+        "onCommand:extension.switchNextFile",
+        "onCommand:extension.switchPreviousFile",
+        "onCommand:extension.switchAtIndex1",
+        "onCommand:extension.switchAtIndex2",
+        "onCommand:extension.switchAtIndex3",
+        "onCommand:extension.switchAtIndex4",
+        "onCommand:extension.switchAtIndex5",
+        "onCommand:extension.switchAtIndex6",
+        "onCommand:extension.switchAtIndex7",
+        "onCommand:extension.switchAtIndex8",
+        "onCommand:extension.switchAtIndex9"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.switchFile",
+                "title": "Switch to file from quick pick"
+            },
+            {
+                "command": "extension.switchNextFile",
+                "title": "Switch to the next related file"
+            },
+            {
+                "command": "extension.switchPreviousFile",
+                "title": "Switch to the previous related file"
+            },
+            {
+                "command": "extension.switchAtIndex1",
+                "title": "Switch to the related file at index 1"
+            },
+            {
+                "command": "extension.switchAtIndex2",
+                "title": "Switch to the related file at index 2"
+            },
+            {
+                "command": "extension.switchAtIndex3",
+                "title": "Switch to the related file at index 3"
+            },
+            {
+                "command": "extension.switchAtIndex4",
+                "title": "Switch to the related file at index 4"
+            },
+            {
+                "command": "extension.switchAtIndex5",
+                "title": "Switch to the related file at index 5"
+            },
+            {
+                "command": "extension.switchAtIndex6",
+                "title": "Switch to the related file at index 6"
+            },
+            {
+                "command": "extension.switchAtIndex7",
+                "title": "Switch to the related file at index 7"
+            },
+            {
+                "command": "extension.switchAtIndex8",
+                "title": "Switch to the related file at index 8"
+            },
+            {
+                "command": "extension.switchAtIndex9",
+                "title": "Switch to the related file at index 9"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.switchFile",
+                "key": "ctrl+alt+s",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchNextFile",
+                "key": "ctrl+alt+n",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchPreviousFile",
+                "key": "ctrl+alt+p",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex1",
+                "key": "ctrl+alt+1",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex2",
+                "key": "ctrl+alt+2",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex3",
+                "key": "ctrl+alt+3",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex4",
+                "key": "ctrl+alt+4",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex5",
+                "key": "ctrl+alt+5",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex6",
+                "key": "ctrl+alt+6",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex7",
+                "key": "ctrl+alt+7",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex8",
+                "key": "ctrl+alt+8",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchAtIndex9",
+                "key": "ctrl+alt+9",
+                "when": "editorTextFocus"
+            }
+        ],
+        "configuration": [
+            {
+                "title": "Quick Switch",
+                "properties": {
+                    "quickSwitch.fileGroups": {
+                        "type": "array",
+                        "description": "File groups"
+                    }
+                }
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^3.3.1",
+        "vscode": "^1.1.28",
+        "tslint": "^5.12.1",
+        "@types/node": "^10.12.21",
+        "@types/mocha": "^2.2.42"
+    }
 }
