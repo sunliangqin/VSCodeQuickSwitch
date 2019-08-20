@@ -9,6 +9,10 @@
     "categories": [
         "Other"
     ],
+    "repository": {
+        "url": "https://github.com/sunliangqin/VSCodeQuickSwitch.git"
+    },
+    "publisher": "Liangqin",
     "activationEvents": [
         "onCommand:extension.switchFile",
         "onCommand:extension.switchNextFile",
