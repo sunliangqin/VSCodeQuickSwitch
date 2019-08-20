@@ -36,6 +36,11 @@ class Configuration {
     }
 }
 
+class FileQuickPickItem implements vscode.QuickPickItem {
+    constructor(public readonly label: string, public readonly path: string) {
+    }
+}
+
 async function switchFile(callback: (currentIndex: number, files: string[]) => Promise<string | undefined>) {
     const activeTextEditor = vscode.window.activeTextEditor;
     if (!activeTextEditor) {
@@ -46,7 +51,7 @@ async function switchFile(callback: (currentIndex: number, files: string[]) => P
     const fileGroups = Configuration.Load();
     for (const fileGroup of fileGroups) {
         const files = fileGroup.getList(currentFilePath);
-        if (!files) {
+        if (files.length === 0) {
             continue;
         }
 
@@ -72,10 +77,19 @@ export function activate(context: vscode.ExtensionContext) {
                 }
 
                 const relativePath = vscode.workspace.asRelativePath(file);
-                fileQuickPickItems.push('$(file)  ' + relativePath);
+                fileQuickPickItems.push(new FileQuickPickItem('$(file)  ' + relativePath, file));
             }
 
-            return await vscode.window.showQuickPick(fileQuickPickItems);
+            if (fileQuickPickItems.length === 0) {
+                return;
+            }
+
+            const selectedFile = await vscode.window.showQuickPick(fileQuickPickItems);
+            if (!selectedFile) {
+                return;
+            }
+
+            return selectedFile.path;
         });
     }));
 
