@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 
+const map = new Map<string, string[]>();
+
 class FileGroup {
     pattern: string;
     list: string[];
@@ -10,12 +12,14 @@ class FileGroup {
         this.list = list;
     }
 
-    getList(filePath: string) {
+    match(file: string) {
+        return file.match(this.pattern);
+    }
+
+    getList(path: string) {
         const result = [];
-        if (filePath.match(this.pattern)) {
-            for (const file of this.list) {
-                result.push(filePath.replace(new RegExp(this.pattern), file));
-            }
+        for (const file of this.list) {
+            result.push(path.replace(new RegExp(this.pattern), file));
         }
 
         return result;
@@ -47,10 +51,16 @@ async function switchFile(callback: (currentIndex: number, files: string[]) => P
         return;
     }
 
-    const currentFilePath = activeTextEditor.document.fileName;
     const fileGroups = Configuration.Load();
+    const currentFilePath = activeTextEditor.document.fileName;
     for (const fileGroup of fileGroups) {
-        const files = fileGroup.getList(currentFilePath);
+        let files;
+        if (fileGroup.match(currentFilePath)) {
+            files = fileGroup.getList(currentFilePath);
+        }
+        else {
+            files = map.get(currentFilePath) || [];
+        }
         if (files.length === 0) {
             continue;
         }
@@ -61,8 +71,13 @@ async function switchFile(callback: (currentIndex: number, files: string[]) => P
             return;
         }
 
+        if (!fileGroup.match(file)) {
+            map.set(file, files);
+        }
+
         const document = await vscode.workspace.openTextDocument(file);
         vscode.window.showTextDocument(document);
+
         return;
     }
 }
