@@ -1,5 +1,6 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
+import *  as path from 'path';
+import * as vscode from 'vscode';
 
 const map = new Map<string, string[]>();
 
@@ -16,10 +17,11 @@ class FileGroup {
         return file.match(this.pattern);
     }
 
-    getList(path: string) {
+    getList(file: string) {
         const result = [];
-        for (const file of this.list) {
-            result.push(path.replace(new RegExp(this.pattern), file));
+        for (const item of this.list) {
+            const filePath = file.replace(new RegExp(this.pattern), item);
+            result.push(path.resolve(filePath));
         }
 
         return result;
