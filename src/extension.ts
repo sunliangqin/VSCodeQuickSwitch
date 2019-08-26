@@ -111,11 +111,25 @@ export function activate(context: vscode.ExtensionContext) {
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('extension.switchNextFile', () => {
-        switchFile(async (currentIndex, files) => files[++currentIndex % files.length]);
+        switchFile(async (currentIndex, files) => {
+            for (let i = 1; i < files.length; i++) {
+                const file = files[(currentIndex + i) % files.length];
+                if (fs.existsSync(file)) {
+                    return file;
+                }
+            }
+        });
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('extension.switchPreviousFile', () => {
-        switchFile(async (currentIndex, files) => files[(--currentIndex + files.length) % files.length]);
+        switchFile(async (currentIndex, files) => {
+            for (let i = 1; i < files.length; i++) {
+                const file = files[(currentIndex - i + files.length) % files.length];
+                if (fs.existsSync(file)) {
+                    return file;
+                }
+            }
+        });
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex1', () => {

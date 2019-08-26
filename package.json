@@ -1,8 +1,8 @@
 {
     "name": "quick-switch",
     "displayName": "Quick Switch",
-    "description": "Enables you to quickly switch to related files",
-    "version": "1.0.3",
+    "description": "Enables quick switch among relevant files",
+    "version": "1.1.0",
     "engines": {
         "vscode": "^1.36.0"
     },

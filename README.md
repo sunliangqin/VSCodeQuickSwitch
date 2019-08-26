@@ -1,25 +1,6 @@
-# Basic Example - toggle between two files
-The following setting enables quick switch between .cpp and .h file.
-```json
-"quickSwitch.fileGroups": [
-    {
-        "pattern": "(.+)(\\.cpp|\\.h)",
-        "list": [
-            "$1.cpp",
-            "$1.h"
-        ]
-    }
-]
-```
-When you are in a .cpp or .h file, you can
-* Press `Ctrl+Alt+N` to toggle between the .cpp and .h file
-* Press `Ctrl+Alt+1` to switch to the .cpp file
-* Press `Ctrl+Alt+2` to switch to the .h file
-
 ![Quick Switch](images/quick-switch.gif)
 
-# Advanced Example - toggle between multiple files
-The following setting enables quick switch between .cpp, .h and _ut.cpp.
+The following setting enables quick switch among .cpp, .h and _ut.cpp files.
 
 ```json
 "quickSwitch.fileGroups": [
