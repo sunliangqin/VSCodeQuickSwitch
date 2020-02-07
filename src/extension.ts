@@ -29,7 +29,7 @@ class FileGroup {
 }
 
 class Configuration {
-    static Load(): FileGroup[] {
+    static Load() {
         const fileGroups = [];
         const fileGroupsConfig = vscode.workspace.getConfiguration().get<FileGroup[]>('quickSwitch.fileGroups');
         if (fileGroupsConfig) {
@@ -47,14 +47,25 @@ class FileQuickPickItem implements vscode.QuickPickItem {
     }
 }
 
-async function switchFile(callback: (currentIndex: number, files: string[]) => Promise<string | undefined>) {
+function getCurrentFilePath() {
     const activeTextEditor = vscode.window.activeTextEditor;
     if (!activeTextEditor) {
         return;
     }
 
+    return activeTextEditor.document.fileName;
+}
+
+async function actionOnSelectedFile(
+    filterCallback: (currentIndex: number, files: string[]) => Promise<string | undefined>,
+    actionCallback: (filePath: string) => void) {
+
+    const currentFilePath = getCurrentFilePath();
+    if (!currentFilePath) {
+        return;
+    }
+
     const fileGroups = Configuration.Load();
-    const currentFilePath = activeTextEditor.document.fileName;
     for (const fileGroup of fileGroups) {
         let files;
         if (fileGroup.match(currentFilePath)) {
@@ -68,7 +79,7 @@ async function switchFile(callback: (currentIndex: number, files: string[]) => P
         }
 
         const currentIndex = files.indexOf(currentFilePath);
-        const file = await callback(currentIndex, files);
+        const file = await filterCallback(currentIndex, files);
         if (!file || !fs.existsSync(file)) {
             return;
         }
@@ -77,94 +88,160 @@ async function switchFile(callback: (currentIndex: number, files: string[]) => P
             map.set(file, files);
         }
 
-        const document = await vscode.workspace.openTextDocument(file);
-        vscode.window.showTextDocument(document);
-
+        actionCallback(file);
         return;
     }
 }
 
+async function selectFileFromPick(currentIndex: number, files: string[]) {
+    const fileQuickPickItems = [];
+    for (const file of files) {
+        if (!fs.existsSync(file)) {
+            continue;
+        }
+
+        const relativePath = vscode.workspace.asRelativePath(file);
+        fileQuickPickItems.push(new FileQuickPickItem('$(file)  ' + relativePath, file));
+    }
+
+    if (fileQuickPickItems.length === 0) {
+        return;
+    }
+
+    const selectedFile = await vscode.window.showQuickPick(fileQuickPickItems);
+    if (!selectedFile) {
+        return;
+    }
+
+    return selectedFile.path;
+}
+
+function showFile(filePath: string) {
+    vscode.workspace.openTextDocument(filePath).then(vscode.window.showTextDocument);
+}
+
+function compareFiles(leftFilePath: string, rightFilePath: string) {
+    const leftFileUri = vscode.Uri.file(leftFilePath);
+    const rightFileUri = vscode.Uri.file(rightFilePath);
+    const title = `${path.basename(leftFilePath)} ↔ ${path.basename(rightFilePath)}`;
+
+    return vscode.commands.executeCommand('vscode.diff', leftFileUri, rightFileUri, title);
+}
+
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchFile', () => {
-        switchFile(async (currentIndex, files) => {
-            const fileQuickPickItems = [];
-            for (const file of files) {
-                if (!fs.existsSync(file)) {
-                    continue;
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.compareAsLeftFile',
+            () => actionOnSelectedFile(selectFileFromPick, (filePath) => {
+                const currentFilePath = getCurrentFilePath();
+                if (!currentFilePath) {
+                    return;
                 }
 
-                const relativePath = vscode.workspace.asRelativePath(file);
-                fileQuickPickItems.push(new FileQuickPickItem('$(file)  ' + relativePath, file));
-            }
+                compareFiles(currentFilePath, filePath);
+            }))
+    );
 
-            if (fileQuickPickItems.length === 0) {
-                return;
-            }
-
-            const selectedFile = await vscode.window.showQuickPick(fileQuickPickItems);
-            if (!selectedFile) {
-                return;
-            }
-
-            return selectedFile.path;
-        });
-    }));
-
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchNextFile', () => {
-        switchFile(async (currentIndex, files) => {
-            for (let i = 1; i < files.length; i++) {
-                const file = files[(currentIndex + i) % files.length];
-                if (fs.existsSync(file)) {
-                    return file;
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.compareAsRightFile',
+            () => actionOnSelectedFile(selectFileFromPick, (filePath) => {
+                const currentFilePath = getCurrentFilePath();
+                if (!currentFilePath) {
+                    return;
                 }
-            }
-        });
-    }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchPreviousFile', () => {
-        switchFile(async (currentIndex, files) => {
-            for (let i = 1; i < files.length; i++) {
-                const file = files[(currentIndex - i + files.length) % files.length];
-                if (fs.existsSync(file)) {
-                    return file;
-                }
-            }
-        });
-    }));
+                compareFiles(filePath, currentFilePath);
+            }))
+    );
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex1', () => {
-        switchFile(async (currentIndex, files) => files[0]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchFile',
+            () => actionOnSelectedFile(selectFileFromPick, showFile)
+        ));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex2', () => {
-        switchFile(async (currentIndex, files) => files[1]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchNextFile',
+            () => {
+                actionOnSelectedFile(
+                    async (currentIndex, files) => {
+                        for (let i = 1; i < files.length; i++) {
+                            const file = files[(currentIndex + i) % files.length];
+                            if (fs.existsSync(file)) {
+                                return file;
+                            }
+                        }
+                    }, showFile);
+            }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex3', () => {
-        switchFile(async (currentIndex, files) => files[2]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchPreviousFile',
+            () => {
+                actionOnSelectedFile(
+                    async (currentIndex, files) => {
+                        for (let i = 1; i < files.length; i++) {
+                            const file = files[(currentIndex - i + files.length) % files.length];
+                            if (fs.existsSync(file)) {
+                                return file;
+                            }
+                        }
+                    }, showFile);
+            }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex4', () => {
-        switchFile(async (currentIndex, files) => files[3]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex1',
+            () => actionOnSelectedFile(async (currentIndex, files) => files[0], showFile)
+        ));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex5', () => {
-        switchFile(async (currentIndex, files) => files[4]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex2',
+            () => actionOnSelectedFile(async (currentIndex, files) => files[1], showFile)
+        ));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex6', () => {
-        switchFile(async (currentIndex, files) => files[5]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex3',
+            () => actionOnSelectedFile(async (currentIndex, files) => files[2], showFile)
+        ));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex7', () => {
-        switchFile(async (currentIndex, files) => files[6]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex4',
+            () => actionOnSelectedFile(async (currentIndex, files) => files[3], showFile)
+        ));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex8', () => {
-        switchFile(async (currentIndex, files) => files[7]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex5',
+            () => actionOnSelectedFile(async (currentIndex, files) => files[4], showFile)
+        ));
 
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchAtIndex9', () => {
-        switchFile(async (currentIndex, files) => files[8]);
-    }));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex6',
+            () => actionOnSelectedFile(async (currentIndex, files) => files[5], showFile)
+        ));
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex7', () =>
+            actionOnSelectedFile(async (currentIndex, files) => files[6], showFile)
+        ));
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex8', () =>
+            actionOnSelectedFile(async (currentIndex, files) => files[7], showFile)
+        ));
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'extension.switchAtIndex9', () =>
+            actionOnSelectedFile(async (currentIndex, files) => files[8], showFile)
+        ));
 }

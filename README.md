@@ -24,3 +24,5 @@ When you are in one of the .cpp, .h or _ut.cpp file, you can
 * Press `Ctrl+Alt+1` to switch to the .cpp file (the first file in the list)
 * Press `Ctrl+Alt+2` to switch to the .h file (the second file in the list)
 * Press `Ctrl+Alt+3` to switch to the _ut.cpp file (the third file in the list)
+* Press `Ctrl+Alt+L` to compare with a file from quick pick (current file as left file)
+* Press `Ctrl+Alt+R` to compare with a file from quick pick (current file as right file)

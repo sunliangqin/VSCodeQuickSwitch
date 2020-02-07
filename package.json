@@ -2,7 +2,7 @@
     "name": "quick-switch",
     "displayName": "Quick Switch",
     "description": "Enables quick switch among relevant files",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "engines": {
         "vscode": "^1.36.0"
     },
@@ -14,6 +14,8 @@
     },
     "publisher": "Liangqin",
     "activationEvents": [
+        "onCommand:extension.compareAsLeftFile",
+        "onCommand:extension.compareAsRightFile",
         "onCommand:extension.switchFile",
         "onCommand:extension.switchNextFile",
         "onCommand:extension.switchPreviousFile",
@@ -30,6 +32,14 @@
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
+            {
+                "command": "extension.compareAsLeftFile",
+                "title": "Compare with file from quick pick (current file as lift one)"
+            },
+            {
+                "command": "extension.compareAsRightFile",
+                "title": "Compare with file from quick pick (current file as right one)"
+            },
             {
                 "command": "extension.switchFile",
                 "title": "Switch to file from quick pick"
@@ -80,6 +90,16 @@
             }
         ],
         "keybindings": [
+            {
+                "command": "extension.compareAsLeftFile",
+                "key": "ctrl+alt+l",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.compareAsRightFile",
+                "key": "ctrl+alt+r",
+                "when": "editorTextFocus"
+            },
             {
                 "command": "extension.switchFile",
                 "key": "ctrl+alt+s",
