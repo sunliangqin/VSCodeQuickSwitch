@@ -2,7 +2,7 @@
     "name": "quick-switch",
     "displayName": "Quick Switch",
     "description": "Enables quick switch among relevant files",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "engines": {
         "vscode": "^1.36.0"
     },
@@ -14,150 +14,20 @@
     },
     "publisher": "Liangqin",
     "activationEvents": [
-        "onCommand:extension.compareAsLeftFile",
-        "onCommand:extension.compareAsRightFile",
-        "onCommand:extension.switchFile",
-        "onCommand:extension.switchNextFile",
-        "onCommand:extension.switchPreviousFile",
-        "onCommand:extension.switchAtIndex1",
-        "onCommand:extension.switchAtIndex2",
-        "onCommand:extension.switchAtIndex3",
-        "onCommand:extension.switchAtIndex4",
-        "onCommand:extension.switchAtIndex5",
-        "onCommand:extension.switchAtIndex6",
-        "onCommand:extension.switchAtIndex7",
-        "onCommand:extension.switchAtIndex8",
-        "onCommand:extension.switchAtIndex9"
+        "onCommand:extension.switchFile"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "extension.compareAsLeftFile",
-                "title": "Compare with file from quick pick (current file as lift one)"
-            },
-            {
-                "command": "extension.compareAsRightFile",
-                "title": "Compare with file from quick pick (current file as right one)"
-            },
-            {
                 "command": "extension.switchFile",
                 "title": "Switch to file from quick pick"
-            },
-            {
-                "command": "extension.switchNextFile",
-                "title": "Switch to the next related file"
-            },
-            {
-                "command": "extension.switchPreviousFile",
-                "title": "Switch to the previous related file"
-            },
-            {
-                "command": "extension.switchAtIndex1",
-                "title": "Switch to the related file at index 1"
-            },
-            {
-                "command": "extension.switchAtIndex2",
-                "title": "Switch to the related file at index 2"
-            },
-            {
-                "command": "extension.switchAtIndex3",
-                "title": "Switch to the related file at index 3"
-            },
-            {
-                "command": "extension.switchAtIndex4",
-                "title": "Switch to the related file at index 4"
-            },
-            {
-                "command": "extension.switchAtIndex5",
-                "title": "Switch to the related file at index 5"
-            },
-            {
-                "command": "extension.switchAtIndex6",
-                "title": "Switch to the related file at index 6"
-            },
-            {
-                "command": "extension.switchAtIndex7",
-                "title": "Switch to the related file at index 7"
-            },
-            {
-                "command": "extension.switchAtIndex8",
-                "title": "Switch to the related file at index 8"
-            },
-            {
-                "command": "extension.switchAtIndex9",
-                "title": "Switch to the related file at index 9"
             }
         ],
         "keybindings": [
             {
-                "command": "extension.compareAsLeftFile",
-                "key": "ctrl+alt+l",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.compareAsRightFile",
-                "key": "ctrl+alt+r",
-                "when": "editorTextFocus"
-            },
-            {
                 "command": "extension.switchFile",
                 "key": "ctrl+alt+s",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchNextFile",
-                "key": "ctrl+alt+n",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchPreviousFile",
-                "key": "ctrl+alt+p",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex1",
-                "key": "ctrl+alt+1",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex2",
-                "key": "ctrl+alt+2",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex3",
-                "key": "ctrl+alt+3",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex4",
-                "key": "ctrl+alt+4",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex5",
-                "key": "ctrl+alt+5",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex6",
-                "key": "ctrl+alt+6",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex7",
-                "key": "ctrl+alt+7",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex8",
-                "key": "ctrl+alt+8",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "extension.switchAtIndex9",
-                "key": "ctrl+alt+9",
                 "when": "editorTextFocus"
             }
         ],
@@ -167,7 +37,22 @@
                 "properties": {
                     "quickSwitch.fileGroups": {
                         "type": "array",
-                        "description": "File groups"
+                        "default": [],
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "pattern": {
+                                    "type": "string"
+                                },
+                                "list": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Quick switch file groups"
                     }
                 }
             }
@@ -182,9 +67,9 @@
     },
     "devDependencies": {
         "@types/mocha": "^2.2.42",
-        "@types/node": "^10.17.14",
+        "@types/node": "^10.17.17",
         "tslint": "^5.20.1",
-        "typescript": "^3.7.5",
+        "typescript": "^3.8.3",
         "vscode": "^1.1.36"
     }
 }
