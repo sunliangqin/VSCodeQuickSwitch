@@ -39,7 +39,7 @@ async function selectFileFromPick(files: string[]) {
     });
 
     const selectedFile = await vscode.window.showQuickPick(fileQuickPickItems,
-        { placeHolder: "Switch file" });
+        { placeHolder: "Go to file" });
     return selectedFile?.path;
 }
 
