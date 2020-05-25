@@ -15,19 +15,19 @@
     },
     "publisher": "Liangqin",
     "activationEvents": [
-        "onCommand:extension.switchFile"
+        "onCommand:quick-switch.switchFile"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "extension.switchFile",
+                "command": "quick-switch.switchFile",
                 "title": "Switch to file"
             }
         ],
         "keybindings": [
             {
-                "command": "extension.switchFile",
+                "command": "quick-switch.switchFile",
                 "key": "ctrl+alt+s",
                 "when": "editorTextFocus"
             }

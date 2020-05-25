@@ -44,7 +44,7 @@ async function selectFileFromPick(files: string[]) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('extension.switchFile', async () => {
+    context.subscriptions.push(vscode.commands.registerCommand('quick-switch.switchFile', async () => {
         const activeTextEditor = vscode.window.activeTextEditor;
         if (!activeTextEditor) {
             return;
