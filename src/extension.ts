@@ -4,8 +4,9 @@ import * as vscode from 'vscode';
 
 const map = new Map<string, string[]>();
 
-class FileGroup {
-    constructor(public readonly pattern: string, public readonly list: string[]) { }
+class Rule {
+    constructor(public readonly pattern: string, public readonly list: string[]) {
+    }
 
     match(file: string) {
         return file.match(this.pattern);
@@ -21,9 +22,9 @@ class FileGroup {
 
 class Configuration {
     static Load() {
-        const fileGroupsConfig = vscode.workspace.getConfiguration().get<FileGroup[]>(
+        const rules = vscode.workspace.getConfiguration().get<Rule[]>(
             'quickSwitch.rules', []);
-        return fileGroupsConfig.map(x => new FileGroup(x.pattern, x.list));
+        return rules.map(x => new Rule(x.pattern, x.list));
     }
 }
 
@@ -51,21 +52,26 @@ export function activate(context: vscode.ExtensionContext) {
         }
         const currentFilePath = activeTextEditor.document.fileName;
 
-        const fileGroups = Configuration.Load();
-        const matchedFileGroup = fileGroups.find(x => x.match(currentFilePath));
-        let files = matchedFileGroup?.expand(currentFilePath) || map.get(currentFilePath) || [];
+        const rules = Configuration.Load();
+        const matchedRule = rules.find(x => x.match(currentFilePath));
+        let files = matchedRule?.expand(currentFilePath) || map.get(currentFilePath) || [];
 
         const candidates = files.filter(x => x != currentFilePath && fs.existsSync(x));
         if (candidates.length == 0) {
             return;
         }
 
-        const file = await selectFileFromPick(candidates);
-        if (!file) {
-            return;
+        let file;
+        if (candidates.length == 1) {
+            file = candidates[0];
+        } else {
+            file = await selectFileFromPick(candidates);
+            if (!file) {
+                return;
+            }
         }
 
-        if (!matchedFileGroup?.match(file)) {
+        if (!matchedRule?.match(file)) {
             map.set(file, files);
         }
 

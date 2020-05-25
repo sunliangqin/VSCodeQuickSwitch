@@ -22,7 +22,7 @@
         "commands": [
             {
                 "command": "quickSwitch.switchFile",
-                "title": "Switch to file"
+                "title": "Switch to File"
             }
         ],
         "keybindings": [
