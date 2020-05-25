@@ -18,5 +18,5 @@ The following setting enables quick switch among .cpp, .h and _ut.cpp files.
     }
 ]
 ```
-1. pattern: a regular expression to match with the current file path. The first group that matches will be used for quick switch.
+1. pattern: a regular expression to match with the current file path. The first rule that matches will be used for quick switch.
 1. list: an ordered list of files for quick switch. Use $n to reference the capturing groups defined in pattern.
