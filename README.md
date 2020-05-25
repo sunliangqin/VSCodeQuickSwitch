@@ -7,7 +7,7 @@ This extension enables you quickly switch between interested files. Press `Ctrl+
 The following setting enables quick switch among .cpp, .h and _ut.cpp files.
 
 ```json
-"quickSwitch.fileGroups": [
+"quickSwitch.rules": [
     {
         "pattern": "(.+?)(_ut\\.cpp|\\.cpp|\\.h)",
         "list": [

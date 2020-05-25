@@ -22,7 +22,7 @@ class FileGroup {
 class Configuration {
     static Load() {
         const fileGroupsConfig = vscode.workspace.getConfiguration().get<FileGroup[]>(
-            'quickSwitch.fileGroups', []);
+            'quickSwitch.rules', []);
         return fileGroupsConfig.map(x => new FileGroup(x.pattern, x.list));
     }
 }
@@ -44,7 +44,7 @@ async function selectFileFromPick(files: string[]) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('quick-switch.switchFile', async () => {
+    context.subscriptions.push(vscode.commands.registerCommand('quickSwitch.switchFile', async () => {
         const activeTextEditor = vscode.window.activeTextEditor;
         if (!activeTextEditor) {
             return;
