@@ -56,13 +56,11 @@ export function activate(context: vscode.ExtensionContext) {
         const matchedRule = rules.find(x => x.match(currentFilePath));
         let files = matchedRule?.expand(currentFilePath) || map.get(currentFilePath) || [];
 
+        let file;
         const candidates = files.filter(x => x != currentFilePath && fs.existsSync(x));
         if (candidates.length == 0) {
             return;
-        }
-
-        let file;
-        if (candidates.length == 1) {
+        } else if (candidates.length == 1) {
             file = candidates[0];
         } else {
             file = await selectFileFromPick(candidates);
