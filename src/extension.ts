@@ -15,7 +15,7 @@ class Rule {
     expand(file: string) {
         return this.list.map(x => {
             const filePath = file.replace(new RegExp(this.pattern), x);
-            return path.resolve(filePath);
+            return path.resolve(filePath).replace(/\\/g, "/");
         });
     }
 }
