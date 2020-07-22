@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!activeTextEditor) {
             return;
         }
-        const currentFilePath = activeTextEditor.document.fileName;
+        const currentFilePath = activeTextEditor.document.fileName.replace(/\\/g, "/");
 
         const rules = Configuration.Load();
         const matchedRule = rules.find(x => x.match(currentFilePath));
