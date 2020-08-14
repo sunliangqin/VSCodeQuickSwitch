@@ -2,7 +2,7 @@
     "name": "quick-switch",
     "displayName": "Quick Switch",
     "description": "Enables quick switch among relevant files",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "license": "MIT",
     "engines": {
         "vscode": "^1.47.0"
