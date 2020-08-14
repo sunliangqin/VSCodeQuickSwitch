@@ -20,11 +20,38 @@ class Rule {
     }
 }
 
-class Configuration {
-    static Load() {
+class QuickOpenKeyword {
+    constructor(public readonly pattern: string, public readonly result: string) {
+    }
+
+    convert(file: string) {
+        if (this.pattern && this.result) {
+            const filePath = file.replace(new RegExp(this.pattern), this.result);
+            return path.resolve(filePath).replace(/\\/g, "/");
+        }
+        else {
+            return path.parse(file).base;
+        }
+    }
+}
+
+class Config {
+    static LoadRules() : Rule[] {
         const rules = vscode.workspace.getConfiguration().get<Rule[]>(
             'quickSwitch.rules', []);
         return rules.map(x => new Rule(x.pattern, x.list));
+    }
+
+    static LoadFallbackToQuickOpen() : boolean {
+        return vscode.workspace.getConfiguration().get<boolean>(
+            "quickSwitch.fallbackToQuickOpen", true);
+    }
+
+    static LoadQuickOpenKeyword() : QuickOpenKeyword {
+        const quickOpenKeyword = vscode.workspace.getConfiguration()
+            .get<QuickOpenKeyword>('quickSwitch.quickOpenKeyword');
+        return new QuickOpenKeyword(quickOpenKeyword?.pattern ?? "",
+            quickOpenKeyword?.result ?? "");
     }
 }
 
@@ -51,29 +78,43 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
         const currentFilePath = activeTextEditor.document.fileName.replace(/\\/g, "/");
+        console.info(`Current file path: ${currentFilePath}`);
 
-        const rules = Configuration.Load();
+        const rules = Config.LoadRules();
         const matchedRule = rules.find(x => x.match(currentFilePath));
+        console.info(`Matched rule: ${JSON.stringify(matchedRule)}`);
         let files = matchedRule?.expand(currentFilePath) || map.get(currentFilePath) || [];
+        console.info(`Files: ${files}`);
 
         let file;
         const candidates = files.filter(x => x != currentFilePath && fs.existsSync(x));
-        if (candidates.length == 0) {
-            return;
-        } else if (candidates.length == 1) {
-            file = candidates[0];
+        console.info(`Candidates: ${candidates}`);
+        if (candidates.length > 0) {
+            if (candidates.length == 1) {
+                file = candidates[0];
+            } else {
+                file = await selectFileFromPick(candidates);
+                if (!file) {
+                    return;
+                }
+            }
+
+            if (!matchedRule?.match(file)) {
+                map.set(file, files);
+            }
+
+            console.info(`Switch to ${file}`);
+            const document = await vscode.workspace.openTextDocument(file);
+            vscode.window.showTextDocument(document);
         } else {
-            file = await selectFileFromPick(candidates);
-            if (!file) {
-                return;
+            const fallbackToQuickOpen = Config.LoadFallbackToQuickOpen();
+            if (fallbackToQuickOpen) {
+                var quickOpenKeyword = Config.LoadQuickOpenKeyword();
+                var keyword = quickOpenKeyword.convert(currentFilePath);
+
+                console.info(`Search files with keyword ${keyword}`);
+                vscode.commands.executeCommand("workbench.action.quickOpen", keyword);
             }
         }
-
-        if (!matchedRule?.match(file)) {
-            map.set(file, files);
-        }
-
-        const document = await vscode.workspace.openTextDocument(file);
-        vscode.window.showTextDocument(document);
     }));
 }

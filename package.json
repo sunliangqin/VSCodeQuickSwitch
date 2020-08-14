@@ -54,6 +54,21 @@
                             }
                         },
                         "description": "Quick switch rules"
+                    },
+                    "quickSwitch.fallbackToQuickOpen": {
+                        "type": "boolean",
+                        "default": "true"
+                    },
+                    "quickSwitch.quickOpenKeyword": {
+                        "type": "object",
+                        "properties": {
+                            "pattern": {
+                                "type": "string"
+                            },
+                            "result": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
