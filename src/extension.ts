@@ -25,13 +25,9 @@ class QuickOpenKeyword {
     }
 
     convert(file: string) {
-        if (this.pattern && this.result) {
-            const filePath = file.replace(new RegExp(this.pattern), this.result);
-            return path.resolve(filePath).replace(/\\/g, "/");
-        }
-        else {
-            return path.parse(file).base;
-        }
+        return this.pattern && this.result ?
+            file.replace(new RegExp(this.pattern), this.result) :
+            path.parse(file).base;
     }
 }
 
