@@ -1,7 +1,7 @@
 # Introduction
 This extension enables you quickly switch between files. Press `Ctrl+Alt+S` to switch to another file from quick pick.
 
-![Quick Switch](images/quick-switch.gif)
+![Quick Switch](assets/quick-switch.gif)
 
 # Setting
 The following setting enables quick switch among .cpp, .h and _ut.cpp files.
